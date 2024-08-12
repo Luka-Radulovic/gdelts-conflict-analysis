@@ -175,9 +175,6 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
 
-#VS Code
-.vscode
-
 #Postgres DB
 postgres/
 
@@ -186,3 +183,4 @@ postgres/
 
 #Cache files
 src/gdelt_api/json_store/stats_cache.json
+.DS_Store
