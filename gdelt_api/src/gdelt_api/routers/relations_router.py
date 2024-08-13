@@ -39,5 +39,5 @@ async def get_relations(
     else:
         raise HTTPException(
             status_code=400,
-            detail="Relations can be queried by supplying either: both country codes, one country code and a date, or both country codes and a date.",
+            detail=f"Missing query parameters. These are the standard ways of querying relations: {[name for name in dir(relations_service) if name.startswith("get_")]}",
         )
