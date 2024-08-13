@@ -10,15 +10,20 @@ def add_relations(relations: RelationsModel) -> RelationsModel:
     return relations
 
 
-# TODO: Make it work conversely for country_code_b
 def get_relations_by_country_and_date(country_code: str, date: date) -> list[RelationsModel]:
     with session_scope() as session:
-        result = (
+        result_a = (
             session.query(RelationsModel)
             .filter(RelationsModel.country_code_a == country_code, RelationsModel.date == date)
             .all()
         )
-    return result
+        result_b = (
+            session.query(RelationsModel)
+            .filter(RelationsModel.country_code_b == country_code, RelationsModel.date == date)
+            .all()
+        )
+
+    return result_a + result_b
 
 
 def get_relations_by_two_countries(
@@ -69,15 +74,19 @@ def get_relations_by_two_countries_and_date_range(
     return result
 
 
-# TODO: Make it work conversely for country_code_b
 def get_relations_by_country(country_code: str) -> list[RelationsModel]:
     with session_scope() as session:
-        result = (
+        result_a = (
             session.query(RelationsModel)
             .filter(RelationsModel.country_code_a == country_code)
             .all()
         )
-    return result
+        result_b = (
+            session.query(RelationsModel)
+            .filter(RelationsModel.country_code_b == country_code)
+            .all()
+        )
+    return result_a + result_b
 
 
 def get_relations_by_date_range(date_from: date, date_to: date) -> list[RelationsModel]:
