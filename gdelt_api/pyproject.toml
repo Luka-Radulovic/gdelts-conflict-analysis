@@ -18,6 +18,7 @@ seaborn = "^0.13.2"
 apscheduler = "^3.10.4"
 plotly = "^5.23.0"
 shapely = "^2.0.5"
+watchfiles = "0.21.0"
 
 
 [tool.poetry.group.dev.dependencies]
