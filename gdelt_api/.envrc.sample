@@ -1,13 +1,13 @@
 export DB_USER=username
 export DB_PASSWORD=password
 export DB_NAME=database
-export DB_URI=rdbms_name://username:password@host/database
-export API_BASE_URL=http://host:8000
+export DB_URI=postgresql://username:password@localhost/database
+export API_BASE_URL=http://localhost:8000
 export MIGRATION_PATH=src/gdelt_api/migrations
 
 export DOCKER_DB_USER=username
 export DOCKER_DB_PASSWORD=password
 export DOCKER_DB_NAME=database
-export DOCKER_DB_URI=rdbms_name://username:password@host/database
+export DOCKER_DB_URI=postgresql://username:password@host/database
 export DOCKER_API_BASE_URL=http://host:8000
 export DOCKER_MIGRATION_PATH=gdelt_api/migrations
