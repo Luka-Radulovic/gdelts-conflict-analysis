@@ -8,7 +8,33 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 map.setMaxBounds([[-60,-180], [80,180]])
 
-let geoRaw = await fetch('./assets/countries.geo.json')
+let geoRaw = await fetch('./assets/countries.json')
 let geoJson = await geoRaw.json()
 
-L.geoJson(geoJson).addTo(map)
+
+let style = {
+    fillColor: "#2c7fb8",
+    color: "#f20b0b",
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.55
+};
+
+L.geoJson(geoJson, {
+    style:style,
+    onEachFeature:districtData
+}).addTo(map)
+
+function districtData(feature, layer){
+    layer.bindPopup(feature.properties.ADMIN)
+    layer.on('mouseover', function(e) {
+        e.target.setStyle({
+            fillOpacity: 0.8
+        });
+    });
+    layer.on('mouseout', function(e) {
+        e.target.setStyle({
+            fillOpacity: 0.55
+        });
+    });
+};
