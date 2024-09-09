@@ -1,5 +1,8 @@
 from datetime import date
 
+from fastapi import HTTPException
+import sqlalchemy
+
 from gdelt_api.database.models import RelationsModel
 from gdelt_api.repository import relations_repository
 from gdelt_api.schema import RelationsSchema
@@ -12,7 +15,10 @@ def add_relations(relations: RelationsSchema) -> RelationsSchema:
             relations.country_code_a,
         )
     model = RelationsModel(**relations.model_dump())
-    result = relations_repository.add_relations(model)
+    try:
+        result = relations_repository.add_relations(model)
+    except sqlalchemy.exc.IntegrityError:
+        raise HTTPException(400, "Relations already exist for this composite key.")
     return RelationsSchema.model_construct(**result.__dict__)
 
 
@@ -45,7 +51,7 @@ def get_relations_by_composite_id(
         country_code_a,
         relations_repository.get_relations_by_composite_id(
             country_code_a, country_code_b, date
-        ).__dict__
+        ).__dict__,
     )
 
 
