@@ -18,7 +18,7 @@ def add_relations(relations: RelationsSchema) -> RelationsSchema:
 
 def get_relations_by_country_and_date(country_code: str, date: date) -> list[RelationsSchema]:
     return [
-        RelationsSchema.model_construct(**relations.__dict__)
+        RelationsSchema.model_construct_cc(country_code, relations.__dict__)
         for relations in relations_repository.get_relations_by_country_and_date(country_code, date)
     ]
 
@@ -29,7 +29,7 @@ def get_relations_by_two_countries(
     if country_code_a > country_code_b:
         country_code_a, country_code_b = country_code_b, country_code_a
     return [
-        RelationsSchema.model_construct(**relations.__dict__)
+        RelationsSchema.model_construct_cc(country_code_a, relations.__dict__)
         for relations in relations_repository.get_relations_by_two_countries(
             country_code_a, country_code_b
         )
@@ -41,8 +41,9 @@ def get_relations_by_composite_id(
 ) -> RelationsSchema:
     if country_code_a > country_code_b:
         country_code_a, country_code_b = country_code_b, country_code_a
-    return RelationsSchema.model_construct(
-        **relations_repository.get_relations_by_composite_id(
+    return RelationsSchema.model_construct_cc(
+        country_code_a,
+        relations_repository.get_relations_by_composite_id(
             country_code_a, country_code_b, date
         ).__dict__
     )
@@ -54,7 +55,7 @@ def get_relations_by_two_countries_and_date_range(
     if country_code_a > country_code_b:
         country_code_a, country_code_b = country_code_b, country_code_a
     return [
-        RelationsSchema.model_construct(**relations.__dict__)
+        RelationsSchema.model_construct_cc(country_code_a, **relations.__dict__)
         for relations in relations_repository.get_relations_by_two_countries_and_date_range(
             country_code_a, country_code_b, date_from, date_to
         )
@@ -63,7 +64,7 @@ def get_relations_by_two_countries_and_date_range(
 
 def get_relations_by_country(country_code: str) -> list[RelationsSchema]:
     return [
-        RelationsSchema.model_construct(**relations.__dict__)
+        RelationsSchema.model_construct_cc(country_code, relations.__dict__)
         for relations in relations_repository.get_relations_by_country(country_code)
     ]
 
