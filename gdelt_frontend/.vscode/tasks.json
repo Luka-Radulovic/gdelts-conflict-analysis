@@ -1,0 +1,17 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "tsc: watch - tsconfig.json",
+        "type": "shell",
+        "command": "npx tsc --watch",
+        "problemMatcher": ["$tsc-watch"],
+        "isBackground": true,
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+}
+  

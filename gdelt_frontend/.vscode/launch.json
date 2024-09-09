@@ -12,7 +12,6 @@
         },
         "console": "integratedTerminal",
         "internalConsoleOptions": "neverOpen",
-        "outFiles": ["${workspaceFolder}/**/*.js"]
       },
       {
         "type": "chrome",
@@ -20,13 +19,20 @@
         "name": "Launch Chrome to Debug",
         "url": "http://localhost:3000",
         "webRoot": "${workspaceFolder}",
-        "sourceMaps": true
+        "sourceMaps": true,
+        "skipFiles": [
+          "<node_internals>/**",
+          "${workspaceFolder}/node_modules/**",
+          "${workspaceFolder}/index.html",
+          "**/leaflet.js"
+        ]
       }
     ],
     "compounds": [
       {
         "name": "Debug GDELT frontend",
-        "configurations": ["Launch Chrome to Debug","Launch Express Server"]
+        "configurations": ["Launch Chrome to Debug","Launch Express Server"],
+        "preLaunchTask": "tsc: watch - tsconfig.json"
       }
     ]
   }
