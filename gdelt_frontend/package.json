@@ -12,5 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.12"
   }
 }
