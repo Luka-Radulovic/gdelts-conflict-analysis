@@ -5,16 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: FastAPI",
+            "name": "Python Debugger: Module",
             "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
-            "args": [
-                "gdelt_api.main:app",
-                "--reload",
-            ],
-            "jinja": true,
-            "cwd": "src/gdelt_api"
+            "args": ["gdelt_api.main:app", "--reload"]
         }
     ]
 }
