@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:16-alpine
     ports:
-      - 5432:5432
+      - 54329:5432
     volumes:
       - ./postgres:/var/lib/postgresql/data
     environment:
@@ -16,27 +16,3 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
-
-  api:
-    image: gdelt-api
-    depends_on:
-      postgres:
-        condition: service_healthy
-    ports:
-      - 8000:8000
-    environment:
-      - DB_URI=${DOCKER_DB_URI}
-      - MIGRATION_PATH=${DOCKER_MIGRATION_PATH}
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile.api
-      
-  streamlit:
-    image: gdelt-frontend
-    ports:
-      - 8501:8501
-    environment:
-      - API_BASE_URL=${DOCKER_API_BASE_URL}
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile.frontend
