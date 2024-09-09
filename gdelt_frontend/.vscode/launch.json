@@ -2,16 +2,10 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "type": "node",
+        "command": "npm start",
+        "name": "Run npm start",
         "request": "launch",
-        "name": "Launch Express Server",
-        "program": "${workspaceFolder}/server.js",
-        "cwd": "${workspaceFolder}",
-        "env": {
-          "NODE_ENV": "development"
-        },
-        "console": "integratedTerminal",
-        "internalConsoleOptions": "neverOpen",
+        "type": "node-terminal"
       },
       {
         "type": "chrome",
@@ -31,8 +25,7 @@
     "compounds": [
       {
         "name": "Debug GDELT frontend",
-        "configurations": ["Launch Chrome to Debug","Launch Express Server"],
-        "preLaunchTask": "tsc: watch - tsconfig.json"
+        "configurations": ["Launch Chrome to Debug","Run npm start"]
       }
     ]
   }
