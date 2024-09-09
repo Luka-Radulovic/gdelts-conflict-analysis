@@ -18,7 +18,7 @@ services:
       retries: 10
 
   api:
-    image: docker.codechem.com/gdelt-streamlit/backend:main
+    image: afilipovski/gdelt-streamlit/backend:main
     depends_on:
       postgres:
         condition: service_healthy
@@ -32,7 +32,7 @@ services:
       dockerfile: deploy/Dockerfile.api
 
   streamlit:
-    image: docker.codechem.com/gdelt-streamlit/frontend:main
+    image: afilipovski/gdelt-streamlit/frontend:main
     ports:
       - 8501:8501
     environment:
