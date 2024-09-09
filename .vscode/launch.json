@@ -1,0 +1,38 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Streamlit",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "streamlit",
+            "args": [
+                "run",
+                "src/frontend/main.py"
+            ],
+        },
+        {
+            "name": "Python Debugger: FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "uvicorn",
+            "args": [
+                "gdelt_api.main:app",
+                "--reload"
+            ],
+            "jinja": true
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Debug FastAPI and Streamlit",
+            "configurations": [
+                "Python Debugger: Streamlit",
+                "Python Debugger: FastAPI"
+            ]
+        }
+    ]
+}
