@@ -6,12 +6,28 @@ import countries from './assets/countries.json'
 function App() {
   const [countryCodeA, setCountryCodeA] = useState("")
   const [countryCodeB, setCountryCodeB] = useState("")
+
+  const delta = 6
+  let startX : number
+  let startY : number
   
   return (
-    <div onClick={() => {
-      setCountryCodeA("")
-      setCountryCodeB("")
-    }}>
+    <div onMouseDown={(event) => {
+      startX = event.pageX;
+      startY = event.pageY;
+    }}
+    onMouseUp={(event) => {
+      const diffX = Math.abs(event.pageX - startX);
+      const diffY = Math.abs(event.pageY - startY);
+      startX = event.pageX;
+      startY = event.pageY;
+      if (diffX < delta && diffY < delta) {
+        setCountryCodeA("")
+        setCountryCodeB("")
+      }
+    }}
+
+    >
       <MapContainer center={[20, 10]} zoom={2.2} id="map" maxBounds={[[-60, -180], [80, 180]]}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -52,10 +68,13 @@ function App() {
               if (!prev) {
                 return cc;
               } else if (prev !== cc) {
-                setCountryCodeB(cc); // Only set countryCodeB if countryCodeA is already set
+                setCountryCodeB(cc);
               }
-              return prev; // Keep countryCodeA the same
+              return prev;
             });
+            e.originalEvent.stopPropagation()
+          })
+          layer.on('mousedown', e => {
             e.originalEvent.stopPropagation()
           })
         }}/>
