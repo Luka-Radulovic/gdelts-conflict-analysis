@@ -4,6 +4,8 @@ import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import countries from './assets/countries.json'
 import UiOverlay from './UiOverlay';
 import { getCountriesByIso3Code } from './countryOperations';
+import relations from './mocks/relationsMocks';
+import { relationsToColor } from './utils/colorUtils';
 
 function App() {
   const [countryCodeA, setCountryCodeA] = useState("")
@@ -13,6 +15,15 @@ function App() {
   const delta = 6
   let startX: number
   let startY: number
+
+  let map = new Map()
+  if (countryCodeA) {
+    relations.forEach(rel => {
+      if (rel.countryCodeA === countryCodeA) {
+        map.set(rel.countryCodeB, rel.relationsScore)
+      }
+    })
+  }
 
   return (
     <div>
@@ -50,8 +61,9 @@ function App() {
               throw Error("GeoJSONFeature properties are null")
             }
             let cc = geoJsonFeature.properties.ISO_A3
+            let fillColor = relationsToColor(20)
             return {
-              fillColor: cc === countryCodeA ? "#fff" : cc === countryCodeB ? "#000" : "#2c7fb8",
+              fillColor: cc === countryCodeA ? "#fff" : cc === countryCodeB ? "#000" : countryCodeA && map.has(cc) ? relationsToColor(map.get(cc)) : "#2c7fb8",
               color: "#f20b0b",
               weight: 1,
               opacity: 1,
