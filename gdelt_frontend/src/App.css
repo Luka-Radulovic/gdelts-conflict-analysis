@@ -1,1 +1,7 @@
 #map { height: 100vh; }
+#ui-overlay {
+    position: absolute;
+    z-index: 1000;
+    top:20px;
+    right:20px;
+}
