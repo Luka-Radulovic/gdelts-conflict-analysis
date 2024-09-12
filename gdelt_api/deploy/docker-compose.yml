@@ -4,7 +4,7 @@ services:
   postgres:
     image: postgres:16-alpine
     ports:
-      - 5432:5432
+      - 54329:5432
     volumes:
       - ./postgres:/var/lib/postgresql/data
     environment:
@@ -18,7 +18,8 @@ services:
       retries: 10
 
   api:
-    image: afilipovski/gdelt-streamlit/backend:main
+    image: afilipovski/gdelt/backend:main
+    container_name: api
     depends_on:
       postgres:
         condition: service_healthy
@@ -30,22 +31,7 @@ services:
     build:
       context: ..
       dockerfile: deploy/Dockerfile.api
-
-  streamlit:
-    image: afilipovski/gdelt-streamlit/frontend:main
-    ports:
-      - 8501:8501
-    environment:
-      - API_BASE_URL=${DOCKER_API_BASE_URL}
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile.frontend
       
   watchtower:
     image: containrrr/watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - ${HOME}/.docker/config.json:/config.json
-    command: --interval 60 api streamlit
-    env_file:
-      - environment/watchtower.env
+    command: --interval 60 api
