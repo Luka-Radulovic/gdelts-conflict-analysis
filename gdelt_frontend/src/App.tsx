@@ -3,6 +3,7 @@ import './App.css';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import countries from './assets/countries.json'
 import UiOverlay from './UiOverlay';
+import { getCountriesByIso3Code } from './countryOperations';
 
 function App() {
   const [countryCodeA, setCountryCodeA] = useState("")
@@ -16,7 +17,8 @@ function App() {
   return (
     <div>
       <div id="ui-overlay">
-        <UiOverlay date={date} setDate={setDate}/>
+        {countryCodeA &&
+        <UiOverlay date={date} setDate={setDate} countryCodeA={countryCodeA} countryCodeB={countryCodeB}/>}
       </div>
       <div onMouseDown={(event) => {
         startX = event.pageX;
