@@ -1,35 +1,45 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import countries from './assets/countries.json'
 import UiOverlay from './UiOverlay';
-import { getCountriesByIso3Code } from './countryOperations';
-import relations from './mocks/relationsMocks';
 import { relationsToColor } from './utils/colorUtils';
+import { getRelationsByCountryCode } from './api';
 
 function App() {
   const [countryCodeA, setCountryCodeA] = useState("")
   const [countryCodeB, setCountryCodeB] = useState("")
+  const [relations, setRelations] = useState(new Map())
   const [date, setDate] = useState(new Date())
+
+  useEffect(() => {
+    let map = new Map()
+    if (countryCodeA) {
+      getRelationsByCountryCode(countryCodeA).then(r => {
+        r.forEach(rel => {
+          if (rel.country_code_a === countryCodeA) {
+            map.set(rel.country_code_b, rel.relations_score)
+          }
+        })
+        setRelations(map)
+        console.log(map);
+      })
+      // 2+;
+    }
+  }, [countryCodeA])
 
   const delta = 6
   let startX: number
   let startY: number
 
-  let map = new Map()
-  if (countryCodeA) {
-    relations.forEach(rel => {
-      if (rel.countryCodeA === countryCodeA) {
-        map.set(rel.countryCodeB, rel.relationsScore)
-      }
-    })
-  }
+
+
 
   return (
     <div>
       <div id="ui-overlay">
         {countryCodeA &&
-        <UiOverlay date={date} setDate={setDate} countryCodeA={countryCodeA} countryCodeB={countryCodeB}/>}
+          <UiOverlay date={date} setDate={setDate} countryCodeA={countryCodeA} countryCodeB={countryCodeB} />}
       </div>
       <div onMouseDown={(event) => {
         startX = event.pageX;
@@ -63,7 +73,7 @@ function App() {
             let cc = geoJsonFeature.properties.ISO_A3
             let fillColor = relationsToColor(20)
             return {
-              fillColor: cc === countryCodeA ? "#fff" : cc === countryCodeB ? "#000" : countryCodeA && map.has(cc) ? relationsToColor(map.get(cc)) : "#2c7fb8",
+              fillColor: cc === countryCodeA ? "#fff" : cc === countryCodeB ? "#000" : countryCodeA && relations.has(cc) ? relationsToColor(relations.get(cc)) : "#2c7fb8",
               color: "#f20b0b",
               weight: 1,
               opacity: 1,
