@@ -11,3 +11,5 @@ export DOCKER_DB_NAME=database
 export DOCKER_DB_URI=postgresql://username:password@host/database
 export DOCKER_API_BASE_URL=http://host:8000
 export DOCKER_MIGRATION_PATH=gdelt_api/migrations
+
+export API_KEY=API_KEY

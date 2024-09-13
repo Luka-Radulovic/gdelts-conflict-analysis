@@ -1,16 +1,22 @@
 from datetime import date
+import os
 from typing import Callable
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import APIKeyHeader
 
 from gdelt_api.schema import RelationsSchema
 from gdelt_api.services import relations_service
 
 router: APIRouter = APIRouter(prefix="/relations")
 
+header_scheme = APIKeyHeader(name="x-key")
+
 
 @router.post("/")
-async def add_relations(relations: RelationsSchema) -> RelationsSchema:
+async def add_relations(relations: RelationsSchema, key: str = Depends(header_scheme)) -> RelationsSchema:
+    if key != os.getenv("API_KEY"):
+        raise HTTPException(403, "Not authenticated")
     return relations_service.add_relations(relations)
 
 
