@@ -1,6 +1,6 @@
 export default interface RelationsSchema {
-    relationsScore: number;
-    countryCodeA: string;
-    countryCodeB: string;
+    relations_score: number;
+    country_code_a: string;
+    country_code_b: string;
     date: Date;   
 }
