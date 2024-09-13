@@ -6,7 +6,7 @@ services:
     ports:
       - 54329:5432
     volumes:
-      - ./postgres:/var/lib/postgresql/data
+      - gdelt_data:/var/lib/postgresql/data
     environment:
       - POSTGRES_USER=${DOCKER_DB_USER}
       - POSTGRES_PASSWORD=${DOCKER_DB_PASSWORD}
@@ -16,3 +16,6 @@ services:
       interval: 1s
       timeout: 5s
       retries: 10
+
+volumes:
+  gdelt_data:

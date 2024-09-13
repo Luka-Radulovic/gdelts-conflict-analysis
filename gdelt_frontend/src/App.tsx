@@ -4,7 +4,8 @@ import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import countries from './assets/countries.json'
 import UiOverlay from './UiOverlay';
 import { relationsToColor } from './utils/colorUtils';
-import { getRelationsByCountryCode } from './api';
+import { getRelationsByCountryAndDate } from './api';
+import { dateToIso } from './utils/dateUtils';
 
 function App() {
   const [countryCodeA, setCountryCodeA] = useState("")
@@ -15,7 +16,7 @@ function App() {
   useEffect(() => {
     let map = new Map()
     if (countryCodeA) {
-      getRelationsByCountryCode(countryCodeA).then(r => {
+      getRelationsByCountryAndDate(countryCodeA, dateToIso(date)).then(r => {
         r.forEach(rel => {
           if (rel.country_code_a === countryCodeA) {
             map.set(rel.country_code_b, rel.relations_score)
@@ -24,9 +25,11 @@ function App() {
         setRelations(map)
         console.log(map);
       })
-      // 2+;
     }
-  }, [countryCodeA])
+    else {
+      setRelations(map)
+    }
+  }, [countryCodeA, date])
 
   const delta = 6
   let startX: number
@@ -73,7 +76,7 @@ function App() {
             let cc = geoJsonFeature.properties.ISO_A3
             let fillColor = relationsToColor(20)
             return {
-              fillColor: cc === countryCodeA ? "#fff" : cc === countryCodeB ? "#000" : countryCodeA && relations.has(cc) ? relationsToColor(relations.get(cc)) : "#2c7fb8",
+              fillColor: cc === countryCodeA ? "#fff" : cc === countryCodeB ? "#000" : relations.has(cc) ? relationsToColor(relations.get(cc)) : "#2c7fb8",
               color: "#f20b0b",
               weight: 1,
               opacity: 1,
