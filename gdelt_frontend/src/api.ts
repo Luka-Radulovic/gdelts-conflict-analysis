@@ -3,7 +3,7 @@ import RelationsSchema from "./types/RelationsSchema";
 const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL ?? "https://gdelt-api-staging.filipovski.net/api/v1"
 
 async function fetchFromApi(method: string, endpoint: string, params: Record<string, string>) {
-    const url = new URL(`${baseUrl}/${endpoint}`)
+    const url = new URL(`${baseUrl}/${endpoint}/`)
     Object.entries(params).forEach(([k, v]) => {
         url.searchParams.append(k, v)
     })
