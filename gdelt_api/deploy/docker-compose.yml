@@ -28,6 +28,7 @@ services:
     environment:
       - DB_URI=${DOCKER_DB_URI}
       - MIGRATION_PATH=${DOCKER_MIGRATION_PATH}
+      - API_KEY=${API_KEY}
     build:
       context: ..
       dockerfile: deploy/Dockerfile.api
