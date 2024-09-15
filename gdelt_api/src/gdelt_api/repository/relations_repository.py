@@ -10,6 +10,12 @@ def add_relations(relations: RelationsModel) -> RelationsModel:
     return relations
 
 
+def add_all_relations(relations: list[RelationsModel]) -> list[RelationsModel]:
+    with session_scope() as session:
+        session.add_all(relations)
+    return relations
+
+
 def get_relations_by_country_and_date(country_code: str, date: date) -> list[RelationsModel]:
     with session_scope() as session:
         result_a = (

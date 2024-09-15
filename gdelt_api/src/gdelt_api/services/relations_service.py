@@ -9,17 +9,21 @@ from gdelt_api.schema import RelationsSchema
 
 
 def add_relations(relations: RelationsSchema) -> RelationsSchema:
-    if relations.country_code_a > relations.country_code_b:
-        relations.country_code_a, relations.country_code_b = (
-            relations.country_code_b,
-            relations.country_code_a,
-        )
-    model = RelationsModel(**relations.model_dump())
+    model = _model_from_schema(relations)
     try:
         result = relations_repository.add_relations(model)
     except sqlalchemy.exc.IntegrityError:
         raise HTTPException(400, "Relations already exist for this composite key.")
     return RelationsSchema.model_construct(**result.__dict__)
+
+
+def add_all_relations(relations: list[RelationsSchema]) -> list[RelationsSchema]:
+    models = [_model_from_schema(r) for r in relations]
+    try:
+        result = relations_repository.add_all_relations(models)
+    except sqlalchemy.exc.IntegrityError:
+        raise HTTPException(400, "Relations already exist for this composite key.")
+    return [RelationsSchema.model_construct(**r.__dict__) for r in result]
 
 
 def get_relations_by_country_and_date(country_code: str, date: date) -> list[RelationsSchema]:
@@ -37,9 +41,7 @@ def get_relations_by_two_countries(
         cca, ccb = ccb, cca
     return [
         RelationsSchema.model_construct_cc(country_code_a, relations.__dict__)
-        for relations in relations_repository.get_relations_by_two_countries(
-            cca, ccb
-        )
+        for relations in relations_repository.get_relations_by_two_countries(cca, ccb)
     ]
 
 
@@ -51,9 +53,7 @@ def get_relations_by_composite_id(
         cca, ccb = ccb, cca
     return RelationsSchema.model_construct_cc(
         country_code_a,
-        relations_repository.get_relations_by_composite_id(
-            cca, ccb, date
-        ).__dict__,
+        relations_repository.get_relations_by_composite_id(cca, ccb, date).__dict__,
     )
 
 
@@ -83,3 +83,13 @@ def get_relations_by_date_range(date_from: date, date_to: date) -> list[Relation
         RelationsSchema.model_construct(**relations.__dict__)
         for relations in relations_repository.get_relations_by_date_range(date_from, date_to)
     ]
+
+
+def _model_from_schema(relations: RelationsSchema) -> RelationsModel:
+    if relations.country_code_a > relations.country_code_b:
+        relations.country_code_a, relations.country_code_b = (
+            relations.country_code_b,
+            relations.country_code_a,
+        )
+    model = RelationsModel(**relations.model_dump())
+    return model
