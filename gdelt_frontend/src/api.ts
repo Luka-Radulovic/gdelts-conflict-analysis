@@ -1,6 +1,6 @@
 import RelationsSchema from "./types/RelationsSchema";
 
-const baseUrl = "http://localhost:8000/api/v1"
+const baseUrl = process.env.REACT_APP_BACKEND_BASE_URL ?? "https://gdelt-api-staging.filipovski.net/api/v1"
 
 async function fetchFromApi(method: string, endpoint: string, params: Record<string, string>) {
     const url = new URL(`${baseUrl}/${endpoint}`)
