@@ -121,5 +121,3 @@ if response.status_code == 200:
         file.write(soup.prettify())
 else:
     print(f"Failed to retrieve gdelt event codes. Status code: {response.status_code}")
-
-

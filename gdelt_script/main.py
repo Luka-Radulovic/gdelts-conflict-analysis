@@ -21,6 +21,8 @@ with open(r"./data/06country_codes.txt", "r") as file:
 
 country_codes.pop("CODE")
 
+country_codes["ROU"] = "Romania"
+
 event_codes: dict[str, str] = {}
 
 with open(r"./data/07event_codes.txt", "r") as file:
@@ -303,11 +305,11 @@ exponential_wait_time = 1
 total_days = (end_date - start_date).days + 1
 
 with tqdm(total=total_days) as pbar:
-    dateconfig['from'] = current_date.isoformat()
-    with open("config.cfg") as file:
-        json.dump(dateconfig, file)
 
     while current_date <= end_date:
+        dateconfig["from"] = current_date.isoformat()
+        with open("config.cfg", "w") as file:
+            json.dump(dateconfig, file)
         times = [current_date.year, current_date.month, current_date.day]
         try:
             current_data = load_gdelt_by_yyyymmdd(*times)
