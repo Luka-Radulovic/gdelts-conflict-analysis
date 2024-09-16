@@ -10,7 +10,6 @@ import numpy as np
 import datetime
 import time
 from tqdm import tqdm
-from fake_useragent import UserAgent
 from names import col_names, mentions_col_names
 
 print(
@@ -27,20 +26,6 @@ if answer.lower()[0] == "n":
 if not os.path.exists(r"./data/"):
     os.makedirs(r"./data/")
 
-url = "http://data.gdeltproject.org/gdeltv2/masterfilelist.txt"
-
-# Once this cell is ran, it will take some time to finish (~1m) due to
-# the retrieval and parsing of large amounts
-# of data which need to be written to file
-response = requests.get(url)
-
-if response.status_code == 200:
-    soup = BeautifulSoup(response.content, "html.parser")
-
-    with open("./data/01events.txt", "w") as file:
-        file.write(soup.prettify())
-else:
-    print(f"Failed to retrieve gdelt data /w code: {response.status_code}")
 
 pattern = r"http:\/\/data.gdeltproject.org\/gdeltv2\/(.*?)\.export\.CSV\.zip"
 last_date_time = None
@@ -212,16 +197,7 @@ def load_gdelt_from_url(url: str) -> pd.DataFrame | None:
     Load gdelt data from url on certain date time.
     """
 
-    ua = UserAgent()
-
-    headers = {
-        "User-Agent": ua.random,
-        "X-Forwarded-For": "127.0.0.1",  # Perhaps this will work better instead of random_ipv6
-    }
-
-    # < --------------------------------------------------------------- >
-
-    response = requests.get(url, stream=True, headers=headers)
+    response = requests.get(url, stream=True)
 
     if response.status_code == 200:
         with open(r"./data/04temp_15min_data.zip", "wb") as file:
