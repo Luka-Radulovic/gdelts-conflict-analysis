@@ -10,7 +10,7 @@ with open("gdelt_frontend/src/assets/countries.json") as f:
         for feature in countries["features"]
     }
     other_cc = requests.get(
-        url=r"https://gdelt-api-staging.filipovski.net/api/v1/relations/",
+        url=r"http://localhost:8000/api/v1/relations/",
         headers={
             "x-key": os.getenv("API_KEY")
         },

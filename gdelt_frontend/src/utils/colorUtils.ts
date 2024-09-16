@@ -31,7 +31,7 @@ function clampToUnitRange(value: number, a: number, b: number) {
     return Math.max(0, Math.min(1, clampedValue));
 }
 
-export function relationsToColor(value: number) {
-    let multiplier = clampToUnitRange(value, -10, 10)
-    return interpolateColor('#ff0000','#00ff00',multiplier)
+export function relationsToColor(relations: number) {
+    if (relations < 0) return interpolateColor('#ff0000','#ffff00', clampToUnitRange(relations, -10, 0))
+    return interpolateColor('#ffff00','#00ff00', clampToUnitRange(relations, 0, 10))
 }
