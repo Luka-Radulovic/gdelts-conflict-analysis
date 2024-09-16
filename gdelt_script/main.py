@@ -502,11 +502,12 @@ with tqdm(total=total_days) as pbar:
                 print(response.content)
                 continue
 
-            exit(0)
             try:
-                response = requests.post(url=r'https://gdelt-api-staging.filipovski.net/api/v1/relations/', data=data_to_post, headers={
-                    "x-key": os.getenv("API_KEY")
-                })
+                response = requests.post(
+                    url=r"https://gdelt-api-staging.filipovski.net/api/v1/relations/",
+                    data=data_to_post,
+                    headers={"x-key": os.getenv("API_KEY")},
+                )
 
             except Exception:
                 print(response.content)
