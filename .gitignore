@@ -185,3 +185,4 @@ postgres/
 .DS_Store
 nopandan.json
 unmentioned.json
+gdelt_script/config.cfg

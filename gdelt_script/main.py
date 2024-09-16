@@ -3,7 +3,6 @@ import json
 import requests
 import zipfile
 import pandas as pd
-from bs4 import BeautifulSoup
 import re
 import jq
 import numpy as np
@@ -11,111 +10,6 @@ import datetime
 import time
 from tqdm import tqdm
 from names import col_names, mentions_col_names
-
-print(
-    """Running all cells will overwrite all current data.
-    Do you want to continue? y/n"""
-)
-answer = input()
-
-if answer.lower()[0] == "n":
-    raise Exception(
-        "Preventing the execution of the notebook as to not overwrite data."
-    )
-
-if not os.path.exists(r"./data/"):
-    os.makedirs(r"./data/")
-
-
-pattern = r"http:\/\/data.gdeltproject.org\/gdeltv2\/(.*?)\.export\.CSV\.zip"
-last_date_time = None
-
-with (
-    open("./data/01events.txt", "r") as in_file,
-    open("./data/02relevant_events.json", "w") as out_file,
-):
-    out_file.write("{\n")
-
-    for line in in_file:
-        try:
-            line_url = line.strip().split()[2]
-            if not line_url.__contains__("export"):
-                continue  # We skip mentions and gkg's
-
-            match = re.search(pattern, line_url)
-
-            if not match:
-                print("Failed to match regex.")
-                continue
-
-            date_time = match.group(1)
-
-            if not last_date_time:  # We write a temporary JSON file
-                out_file.write('"' + date_time[:8] + '":[\n')
-                out_file.write('{"' + date_time[8:12] + '":"' + line_url + '"}')
-
-            elif date_time[:8] != last_date_time:
-                out_file.write("\n],\n")
-                out_file.write('"' + date_time[:8] + '":[\n')
-                out_file.write('{"' + date_time[8:12] + '":"' + line_url + '"}')
-
-            else:
-                out_file.write(",\n")
-                out_file.write('{"' + date_time[8:12] + '":"' + line_url + '"}')
-
-            last_date_time = date_time[:8]
-        except (
-            Exception
-        ):  # The line of data retrieved from the webpage is irregular and can be skipped
-            # print(f'Corrupt line in 01events.txt containing the following line: {line}')
-            continue
-
-    out_file.write("]\n}\n")
-
-
-def multidict(ordered_pairs):
-    data = {}
-
-    for key, value in ordered_pairs:
-        if len(key) == 4:
-            data[key] = value
-            continue
-
-        if not data.get(key):
-            data[key] = []
-        data[key].extend(value)
-
-    return data
-
-
-with (
-    open("./data/02relevant_events.json", "r") as in_file,
-    open("./data/03cleaned_events.json", "w") as out_file,
-):
-    data = json.load(in_file, object_pairs_hook=multidict)
-    json.dump(data, out_file, indent=1)
-
-if not os.path.exists(r"./data/03cleaned_events.json"):
-    raise Exception(
-        "There is no data to preprocess. Please run the cells in the Data Retrieval section."
-    )
-
-pd.set_option("display.max_columns", None)
-
-
-url = "https://www.gdeltproject.org/data/lookups/CAMEO.country.txt"
-
-response = requests.get(url)
-
-if response.status_code == 200:
-    soup = BeautifulSoup(response.content, "html.parser")
-
-    with open(r"./data/06country_codes.txt", "w") as file:
-        file.write(soup.prettify())
-else:
-    print(
-        f"Failed to retrieve gdelt country codes. Status code: {response.status_code}"
-    )
 
 country_codes: dict[str, str] = {}
 
@@ -126,18 +20,6 @@ with open(r"./data/06country_codes.txt", "r") as file:
         country_codes[code] = country
 
 country_codes.pop("CODE")
-
-url = "https://www.gdeltproject.org/data/lookups/CAMEO.eventcodes.txt"
-
-response = requests.get(url)
-
-if response.status_code == 200:
-    soup = BeautifulSoup(response.content, "html.parser")
-
-    with open(r"./data/07event_codes.txt", "w") as file:
-        file.write(soup.prettify())
-else:
-    print(f"Failed to retrieve gdelt event codes. Status code: {response.status_code}")
 
 event_codes: dict[str, str] = {}
 
@@ -407,8 +289,12 @@ def custom_sigmoid(n: int) -> float:
     return 1 / (1 + 1 / (np.e ** ((n - 50) / 10)))
 
 
-start_date = datetime.datetime(2019, 1, 5)
-end_date = datetime.datetime(2019, 1, 10)
+dateconfig = {}
+with open("config.cfg") as file:
+    dateconfig = json.load(file)
+
+start_date = datetime.datetime.fromisoformat(dateconfig["from"])
+end_date = datetime.datetime.fromisoformat(dateconfig["to"])
 
 current_date = start_date
 error_date = None
@@ -417,6 +303,10 @@ exponential_wait_time = 1
 total_days = (end_date - start_date).days + 1
 
 with tqdm(total=total_days) as pbar:
+    dateconfig['from'] = current_date.isoformat()
+    with open("config.cfg") as file:
+        json.dump(dateconfig, file)
+
     while current_date <= end_date:
         times = [current_date.year, current_date.month, current_date.day]
         try:
@@ -471,7 +361,7 @@ with tqdm(total=total_days) as pbar:
                 response = requests.post(
                     url=r"http://127.0.0.1:8000/api/v1/relations/",
                     data=data_to_post,
-                    headers={"x-key": "test"},
+                    headers={"x-key": os.getenv("API_KEY")},
                 )
 
             except Exception:
