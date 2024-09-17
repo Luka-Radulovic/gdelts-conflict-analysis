@@ -1,2 +1,19 @@
 [flake8]
-max-line-length = 120
+ignore = E501,
+         # Line break before binary operator (rule is incompatible with black)
+         W503,
+         # Following black's recommendation; line-length done by B950
+         E203,
+         # Whitespace before ":" (rule is incompatible with black)
+         T100,
+         T101,
+         # Ignoring todos for the moment since the legacy code has many
+exclude = .git,
+          .mypycache,
+          .venv,
+          .vscode,
+          _pycache,
+          dist,
+          scripts,
+
+max-complexity = 7

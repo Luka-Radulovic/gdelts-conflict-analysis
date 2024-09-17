@@ -4,7 +4,6 @@ import requests
 import zipfile
 import pandas as pd
 import re
-import jq
 import numpy as np
 import datetime
 import time
@@ -22,6 +21,7 @@ with open(r"./data/06country_codes.txt", "r") as file:
 country_codes.pop("CODE")
 
 country_codes["ROU"] = "Romania"
+country_codes["MNE"] = "Montenegro"
 
 event_codes: dict[str, str] = {}
 
@@ -256,37 +256,6 @@ def load_gdelt_by_yyyymmdd(
     return pd.concat(data_frames, ignore_index=True)
 
 
-def load_gdelt_from_to_yyyymmdd(
-    year_from: str | int,
-    month_from: str | int,
-    day_from: str | int,
-    year_to: str | int,
-    month_to: str | int,
-    day_to: str | int,
-) -> pd.DataFrame | None:
-    """
-    Load the gdelt events dataset between selected days (inclusive).
-    """
-    start_date = format_time_yyyymmdd_to_str(year_from, month_from, day_from)
-    end_date = format_time_yyyymmdd_to_str(year_to, month_to, day_to)
-
-    with open(r"./data/03cleaned_events.json", "r") as file:
-        json_data = json.dumps(json.load(file))
-
-    # JQ query to filter URLs between the given dates
-    jq_query = f'. | to_entries | map(select(.key >= "{start_date}" and .key <= "{end_date}")) | .[].value | .[] | .[]'
-
-    urls = jq.compile(jq_query).input(text=json_data).all()
-
-    data_frames = []
-    for url in urls:
-        data = load_gdelt_from_url(url)
-        if data is not None:
-            data_frames.append(data)
-
-    return pd.concat(data_frames, ignore_index=True) if len(data_frames) > 0 else None
-
-
 def custom_sigmoid(n: int) -> float:
     return 1 / (1 + 1 / (np.e ** ((n - 50) / 10)))
 
@@ -363,35 +332,13 @@ with tqdm(total=total_days) as pbar:
             try:
                 response = requests.post(
                     url=r"http://localhost:8000/api/v1/relations/",
-                    data=current_data.loc[i:i+BATCH_SIZE-1].to_json(orient='records'),
+                    data=current_data.loc[i : i + BATCH_SIZE - 1].to_json(
+                        orient="records"
+                    ),
                     headers={"x-key": os.getenv("API_KEY")},
                 )
             except Exception:
                 print(response.content)
-        # for row in current_data.index:
-        #     data_to_post = current_data.iloc[row].to_json()
-
-        #     try:
-        #         response = requests.post(
-        #             url=r"http://127.0.0.1:8000/api/v1/relations/",
-        #             data=data_to_post,
-        #             headers={"x-key": os.getenv("API_KEY")},
-        #         )
-
-        #     except Exception:
-        #         print(response.content)
-        #         continue
-
-        #     try:
-        #         response = requests.post(
-        #             url=r"https://gdelt-api-staging.filipovski.net/api/v1/relations/",
-        #             data=data_to_post,
-        #             headers={"x-key": os.getenv("API_KEY")},
-        #         )
-
-        #     except Exception:
-        #         print(response.content)
-        #         continue
 
         pbar.update(1)
         current_date += datetime.timedelta(days=1)
