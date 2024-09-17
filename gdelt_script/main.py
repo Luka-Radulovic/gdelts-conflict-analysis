@@ -14,7 +14,9 @@ from names import col_names, mentions_col_names
 # Global configuration
 RECORD_RESPONSES = True
 if RECORD_RESPONSES:
-    print("WARNING: You are now only recording events! Results from processing won't be posted to API!")
+    print(
+        "WARNING: You are now only recording events! Results from processing won't be posted to API!"
+    )
 
 
 country_codes: dict[str, str] = {}
@@ -255,8 +257,8 @@ def load_gdelt_by_yyyymmdd(
 
     RECORD_PATH = Path(f"{Path(__file__).parent}/scenarios")
     RECORD_PATH.mkdir(exist_ok=True, parents=True)
-    filename = f"{year}-{month}-{day}.csv"
-    file_path = Path(f'{RECORD_PATH}/{filename}')
+    filename = format_time_yyyymmdd_to_str(year, month, day)
+    file_path = Path(f"{RECORD_PATH}/{filename}")
 
     if Path.exists(file_path):
         return pd.read_csv(file_path)
