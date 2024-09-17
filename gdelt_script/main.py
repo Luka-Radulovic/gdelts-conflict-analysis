@@ -11,6 +11,10 @@ import time
 from tqdm import tqdm
 from names import col_names, mentions_col_names
 
+# Global configuration
+RECORD_RESPONSES = True
+
+
 country_codes: dict[str, str] = {}
 
 with open(r"./data/06country_codes.txt", "r") as file:
@@ -151,15 +155,16 @@ def load_gdelt_from_url(url: str) -> pd.DataFrame | None:
     data = data[data["Actor_1_Country_ABBR"] != data["Actor_2_Country_ABBR"]]
 
     # Filter only the countries/continents
-    data = data[
-        data[["Actor_1_Country_ABBR", "Actor_2_Country_ABBR"]]
-        .map(is_valid_country_code)
-        .all(axis=1)
-    ]
+    # TODO: Check if removing this step fixes anything.
+    # data = data[
+    #     data[["Actor_1_Country_ABBR", "Actor_2_Country_ABBR"]]
+    #     .map(is_valid_country_code)
+    #     .all(axis=1)
+    # ]
 
-    data = (
+    if not RECORD_RESPONSES:
         # Get only the relevant columns of the data
-        data[
+        data = data[
             [
                 "Global_Event_ID",
                 "Day",
@@ -171,9 +176,8 @@ def load_gdelt_from_url(url: str) -> pd.DataFrame | None:
                 "Num_Articles",  # 'AVG_TONE', 'Source_URL'
             ]
         ]
-        # Filter only the events that happened in the wanted time-frame
-        [data["Day"] == int(date_time[:8])].reset_index(drop=True)
-    )
+
+    data = [data["Day"] == int(date_time[:8])].reset_index(drop=True)
 
     mentions_url = url.replace("export", "mentions")
 
@@ -247,7 +251,6 @@ def load_gdelt_by_yyyymmdd(
     hours_list = list(range(24))
     minutes_list = list(range(0, 60, 15))
 
-    RECORD_RESPONSES = True
     RECORD_PATH = Path(f"{Path(__file__).parent}/scenarios")
     RECORD_PATH.mkdir(exist_ok=True, parents=True)
     filename = f"{year}-{month}-{day}.csv"
