@@ -13,6 +13,8 @@ from names import col_names, mentions_col_names
 
 # Global configuration
 RECORD_RESPONSES = True
+if RECORD_RESPONSES:
+    print("WARNING: You are now only recording events! Results from processing won't be posted to API!")
 
 
 country_codes: dict[str, str] = {}
@@ -256,7 +258,7 @@ def load_gdelt_by_yyyymmdd(
     filename = f"{year}-{month}-{day}.csv"
     file_path = Path(f'{RECORD_PATH}/{filename}')
 
-    if RECORD_RESPONSES and Path.exists(file_path):
+    if Path.exists(file_path):
         return pd.read_csv(file_path)
 
     data_frames = []
@@ -342,18 +344,19 @@ with tqdm(total=total_days) as pbar:
             lambda x: format_str_yyyymmdd_to_time_str(str(x))
         )
 
-        BATCH_SIZE = 1000
-        for i in range(0, current_data.shape[0], BATCH_SIZE):
-            try:
-                response = requests.post(
-                    url=r"http://localhost:8000/api/v1/relations/",
-                    data=current_data.loc[i : i + BATCH_SIZE - 1].to_json(
-                        orient="records"
-                    ),
-                    headers={"x-key": os.getenv("API_KEY")},
-                )
-            except Exception:
-                print(response.content)
+        if not RECORD_RESPONSES:
+            BATCH_SIZE = 1000
+            for i in range(0, current_data.shape[0], BATCH_SIZE):
+                try:
+                    response = requests.post(
+                        url=r"http://localhost:8000/api/v1/relations/",
+                        data=current_data.loc[i : i + BATCH_SIZE - 1].to_json(
+                            orient="records"
+                        ),
+                        headers={"x-key": os.getenv("API_KEY")},
+                    )
+                except Exception:
+                    print(response.content)
 
         pbar.update(1)
         current_date += datetime.timedelta(days=1)
