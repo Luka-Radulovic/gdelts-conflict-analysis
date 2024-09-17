@@ -179,7 +179,7 @@ def load_gdelt_from_url(url: str) -> pd.DataFrame | None:
             ]
         ]
 
-    data = [data["Day"] == int(date_time[:8])].reset_index(drop=True)
+    data = data[data["Day"] == int(date_time[:8])].reset_index(drop=True)
 
     mentions_url = url.replace("export", "mentions")
 
@@ -301,7 +301,7 @@ with tqdm(total=total_days) as pbar:
         times = [current_date.year, current_date.month, current_date.day]
         try:
             current_data = load_gdelt_by_yyyymmdd(*times)
-        except Exception as e:
+        except ValueError as e:
             print(str(e))
             time.sleep(exponential_wait_time)
 
@@ -347,16 +347,13 @@ with tqdm(total=total_days) as pbar:
         if not RECORD_RESPONSES:
             BATCH_SIZE = 1000
             for i in range(0, current_data.shape[0], BATCH_SIZE):
-                try:
-                    response = requests.post(
-                        url=r"http://localhost:8000/api/v1/relations/",
-                        data=current_data.loc[i : i + BATCH_SIZE - 1].to_json(
-                            orient="records"
-                        ),
-                        headers={"x-key": os.getenv("API_KEY")},
-                    )
-                except Exception:
-                    print(response.content)
+                response = requests.post(
+                    url=r"http://localhost:8000/api/v1/relations/",
+                    data=current_data.loc[i : i + BATCH_SIZE - 1].to_json(
+                        orient="records"
+                    ),
+                    headers={"x-key": os.getenv("API_KEY")},
+                )
 
         pbar.update(1)
         current_date += datetime.timedelta(days=1)
