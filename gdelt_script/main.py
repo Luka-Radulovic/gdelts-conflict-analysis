@@ -1,5 +1,6 @@
 import os
 import json
+from pathlib import Path
 import requests
 import zipfile
 import pandas as pd
@@ -246,6 +247,15 @@ def load_gdelt_by_yyyymmdd(
     hours_list = list(range(24))
     minutes_list = list(range(0, 60, 15))
 
+    RECORD_RESPONSES = True
+    RECORD_PATH = Path(f"{Path(__file__).parent}/scenarios")
+    RECORD_PATH.mkdir(exist_ok=True, parents=True)
+    filename = f"{year}-{month}-{day}.csv"
+    file_path = Path(f'{RECORD_PATH}/{filename}')
+
+    if RECORD_RESPONSES and Path.exists(file_path):
+        return pd.read_csv(file_path)
+
     data_frames = []
     for hours in hours_list:
         for minutes in minutes_list:
@@ -253,7 +263,11 @@ def load_gdelt_by_yyyymmdd(
             if data is not None:
                 data_frames.append(data)
 
-    return pd.concat(data_frames, ignore_index=True)
+    result = pd.concat(data_frames, ignore_index=True)
+    if RECORD_RESPONSES:
+        result.to_csv(file_path)
+
+    return result
 
 
 def custom_sigmoid(n: int) -> float:
@@ -324,8 +338,6 @@ with tqdm(total=total_days) as pbar:
         current_data["date"] = current_data["date"].apply(
             lambda x: format_str_yyyymmdd_to_time_str(str(x))
         )
-
-        current_data.to_csv("process_1day.csv")
 
         BATCH_SIZE = 1000
         for i in range(0, current_data.shape[0], BATCH_SIZE):
