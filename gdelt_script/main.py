@@ -257,7 +257,7 @@ def load_gdelt_by_yyyymmdd(
 
     RECORD_PATH = Path(f"{Path(__file__).parent}/scenarios")
     RECORD_PATH.mkdir(exist_ok=True, parents=True)
-    filename = format_time_yyyymmdd_to_str(year, month, day)
+    filename = format_time_yyyymmdd_to_str(year, month, day) + ".csv"
     file_path = Path(f"{RECORD_PATH}/{filename}")
 
     if Path.exists(file_path):
