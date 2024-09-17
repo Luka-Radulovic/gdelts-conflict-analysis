@@ -93,3 +93,10 @@ def _model_from_schema(relations: RelationsSchema) -> RelationsModel:
         )
     model = RelationsModel(**relations.model_dump())
     return model
+
+
+def delete_relations_by_date_range(date_from: date, date_to: date) -> list[RelationsSchema]:
+    return [
+        RelationsSchema.model_construct(**relations.__dict__)
+        for relations in relations_repository.delete_relations_by_date_range(date_from, date_to)
+    ]

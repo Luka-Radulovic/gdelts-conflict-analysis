@@ -63,3 +63,10 @@ async def get_relations(
         status_code=400,
         detail=f"Missing query parameters. These are the standard ways of querying relations: {names}",
     )
+
+
+@router.delete("/")
+async def delete_relations(
+    date_from: date, date_to: date, authenticated: Any = Depends(api_key_auth)
+) -> list[RelationsSchema]:
+    return relations_service.delete_relations_by_date_range(date_from, date_to)

@@ -1,5 +1,7 @@
 from datetime import date
 
+from fastapi import HTTPException
+
 from gdelt_api.database.models import RelationsModel
 from gdelt_api.database.session import session_scope
 
@@ -102,4 +104,16 @@ def get_relations_by_date_range(date_from: date, date_to: date) -> list[Relation
             .filter(RelationsModel.date >= date_from, RelationsModel.date <= date_to)
             .all()
         )
+    return result
+
+
+def delete_relations_by_date_range(date_from: date, date_to: date) -> list[RelationsModel]:
+    with session_scope() as session:
+        query = session.query(RelationsModel).filter(
+            RelationsModel.date >= date_from, RelationsModel.date <= date_to
+        )
+        result = query.all()
+        rows_deleted = query.delete()
+        if rows_deleted != len(result):
+            raise HTTPException(status_code=500, detail="Not all rows successfully deleted.")
     return result

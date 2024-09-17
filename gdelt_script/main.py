@@ -356,30 +356,42 @@ with tqdm(total=total_days) as pbar:
             lambda x: format_str_yyyymmdd_to_time_str(str(x))
         )
 
-        for row in current_data.index:
-            data_to_post = current_data.iloc[row].to_json()
+        current_data.to_csv("process_1day.csv")
 
+        BATCH_SIZE = 1000
+        for i in range(0, current_data.shape[0], BATCH_SIZE):
             try:
                 response = requests.post(
-                    url=r"http://127.0.0.1:8000/api/v1/relations/",
-                    data=data_to_post,
+                    url=r"http://localhost:8000/api/v1/relations/",
+                    data=current_data.loc[i:i+BATCH_SIZE-1].to_json(orient='records'),
                     headers={"x-key": os.getenv("API_KEY")},
                 )
-
             except Exception:
                 print(response.content)
-                continue
+        # for row in current_data.index:
+        #     data_to_post = current_data.iloc[row].to_json()
 
-            try:
-                response = requests.post(
-                    url=r"https://gdelt-api-staging.filipovski.net/api/v1/relations/",
-                    data=data_to_post,
-                    headers={"x-key": os.getenv("API_KEY")},
-                )
+        #     try:
+        #         response = requests.post(
+        #             url=r"http://127.0.0.1:8000/api/v1/relations/",
+        #             data=data_to_post,
+        #             headers={"x-key": os.getenv("API_KEY")},
+        #         )
 
-            except Exception:
-                print(response.content)
-                continue
+        #     except Exception:
+        #         print(response.content)
+        #         continue
+
+        #     try:
+        #         response = requests.post(
+        #             url=r"https://gdelt-api-staging.filipovski.net/api/v1/relations/",
+        #             data=data_to_post,
+        #             headers={"x-key": os.getenv("API_KEY")},
+        #         )
+
+        #     except Exception:
+        #         print(response.content)
+        #         continue
 
         pbar.update(1)
         current_date += datetime.timedelta(days=1)
