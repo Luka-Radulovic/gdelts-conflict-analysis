@@ -64,8 +64,8 @@ def execute_script():
             )
 
             current_data["Event_Score"] = current_data[
-                "Goldstein_Scale"
-            ] * current_data["Confidence"].apply(lambda x: custom_sigmoid(x))
+                "AVG_TONE"
+            ] / 10
 
             current_data = (
                 current_data.groupby(["Country_Pairs", "Day"])

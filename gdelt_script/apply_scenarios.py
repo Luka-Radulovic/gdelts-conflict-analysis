@@ -1,4 +1,5 @@
 import json
+import os
 
 import requests
 
@@ -43,5 +44,6 @@ for scenario in scenarios:
     requests.delete(
         "http://localhost:8000/api/v1/relations",
         params={"date_from": scenario["from"], "date_to": scenario["to"]},
+        headers={"x-key": os.getenv("API_KEY")},
     )
     execute_script()

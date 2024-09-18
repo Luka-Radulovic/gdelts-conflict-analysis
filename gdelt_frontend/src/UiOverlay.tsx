@@ -3,7 +3,7 @@ import './UiOverlay.css'
 import { dateFromIso, dateToIso } from './utils/dateUtils';
 import { getCountriesByIso3Code } from './countryOperations';
 
-function UiOverlay(props: { date: Date; setDate: Dispatch<SetStateAction<Date>>; countryCodeA: string; countryCodeB: string }) {
+function UiOverlay(props: { date: Date; setDate: Dispatch<SetStateAction<Date>>; countryCodeA: string; countryCodeB: string; relations: Map<any, any> }) {
     const minDate = dateFromIso('2016-01-01')
     const maxDate = new Date()
 
@@ -52,6 +52,9 @@ function UiOverlay(props: { date: Date; setDate: Dispatch<SetStateAction<Date>>;
                     <img className='flag' src={'https://flagicons.lipis.dev/flags/4x3/' + countriesByIso3Code.get(props.countryCodeB)?.properties.ISO_A2.toLowerCase() + '.svg'} alt="" />
                 </div>
             </div>
+            {Array.from(props.relations.entries()).sort((a,b) => a[1]-b[1]).slice(0,10).map(v => <div>
+                {v}
+            </div>)}
         </div>
     )
 }

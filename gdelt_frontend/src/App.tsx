@@ -6,6 +6,7 @@ import UiOverlay from './UiOverlay';
 import { relationsToColor } from './utils/colorUtils';
 import { getRelationsByCountryAndDate } from './api';
 import { dateToIso } from './utils/dateUtils';
+import { relationsToScore } from './types/RelationsSchema';
 
 function App() {
   const [countryCodeA, setCountryCodeA] = useState("")
@@ -19,7 +20,7 @@ function App() {
       getRelationsByCountryAndDate(countryCodeA, dateToIso(date)).then(r => {
         r.forEach(rel => {
           if (rel.country_code_a === countryCodeA) {
-            map.set(rel.country_code_b, rel.relations_score)
+            map.set(rel.country_code_b, relationsToScore(rel))
           }
         })
         setRelations(map)
@@ -42,7 +43,7 @@ function App() {
     <div>
       <div id="ui-overlay">
         {countryCodeA &&
-          <UiOverlay date={date} setDate={setDate} countryCodeA={countryCodeA} countryCodeB={countryCodeB} />}
+          <UiOverlay date={date} setDate={setDate} countryCodeA={countryCodeA} countryCodeB={countryCodeB} relations={relations}/>}
       </div>
       <div onMouseDown={(event) => {
         startX = event.pageX;
