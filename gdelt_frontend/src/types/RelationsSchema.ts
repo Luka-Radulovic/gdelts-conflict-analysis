@@ -10,7 +10,7 @@ export default interface RelationsSchema {
 }
 
 function sigmoid(z: number) {
-    return 1 / (1 + Math.exp(-(z - 300)));
+    return 1 / (1 + Math.exp(-0.05 * (z - 300)));
 }
 
 export function relationsToScore(relations: RelationsSchema) {
@@ -21,7 +21,7 @@ export function relationsToScore(relations: RelationsSchema) {
         relations.num_verbal_conf +
         relations.num_material_conf
 
-    const MATERIAL_MULTIPLIER = 4
+    const MATERIAL_MULTIPLIER = 5
 
     let tone = (relations.relations_score + 10) / 20
     let significance = sigmoid(total)
@@ -32,7 +32,7 @@ export function relationsToScore(relations: RelationsSchema) {
 
     const toneMultiplier = 2
     const significanceMultiplier = -1
-    const eventScoreMultiplier = 3
+    const eventScoreMultiplier = 10
 
     // return tone + significance + eventScore
     // return significance
